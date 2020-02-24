@@ -1,6 +1,7 @@
-using MaskRCNN
+import MaskRCNN
 using Test
 
+
 @testset "MaskRCNN.jl" begin
-    # Write your own tests here.
+    @test MaskRCNN.my_fun_func(2, 1) == 5
 end
