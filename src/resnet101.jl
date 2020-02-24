@@ -20,10 +20,31 @@ end
 # Overload call, so the object can be used as a function
 (m::ConvNorm)(x) = m.activation(m.norm(m.conv(x)))
 
+
+struct IdentityBlock
+    skip_connection
+end
+
+@treelike IdentityBlock
+
+function IdentityBlock(size, filters)
+    layers = Chain(
+        ConvNorm((1,1), filters[1]),
+        ConvNorm(size, filters[2]),
+        ConvNorm((1, 1), filters[3])
+    )
+
+    IdentityBlock(
+        SkipConnection(layers, +)
+    )
+end
+
+# Overload call, so the object can be used as a function
+(m::IdentityBlock)(x) = m.skip_connection(x)
+
+
 model = Chain(
-        ConvNorm((1,1), 3=>6, activation=relu),
-        ConvNorm((2,2), 6=>6, activation=relu),
-        ConvNorm((1,1), 6=>6, activation=identity),
+    IdentityBlock((1,1), (3=>3, 3=>3, 3=>3))
 )
 
 img = reshape(
